@@ -1,4 +1,4 @@
-package org.movio.sparksqlprometheusexporter
+package co.movio.sparksqlprometheusexporter
 
 import atto._, Atto._
 import cats._

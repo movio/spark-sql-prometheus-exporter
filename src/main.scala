@@ -1,4 +1,4 @@
-package org.movio.sparksqlprometheusexporter
+package co.movio.sparksqlprometheusexporter
 
 import java.net.URL
 

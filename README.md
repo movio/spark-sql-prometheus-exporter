@@ -8,8 +8,8 @@ Usage:
 
 ```bash
 spark-submit \
-  --deploy-mode=cluster \
-  https://github.com/movio/spark-sql-prometheus-exporter/releases/download/0.0.1/spark-sql-prometheus-exporter.jar \
+  --class co.movio.sparksqlprometheusexporter.Main
+  spark-sql-prometheus-exporter.jar \
   --pushgateway https://url-to-pushgateway/ \
   --job member_dataset_exporter \
   --metric 'member_count=SELECT COUNT(*) AS value FROM parquet.`hdfs:///etl/members`' \
