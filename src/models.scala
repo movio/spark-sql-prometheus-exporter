@@ -1,6 +1,6 @@
 package co.movio.sparksqlprometheusexporter
 
-import atto._, Atto._
+import atto._, Atto._, atto.ParseResult._
 import cats._
 import cats.data._
 import cats.implicits._
@@ -55,7 +55,7 @@ object PrometheusName {
     } yield new PrometheusName((head +: tail).mkString)
 
   def apply(value: String): Option[PrometheusName] =
-    parser.parseOnly(value).option
+    Utils.runParser(parser, value).toOption
 
   def applyOrThrow(value: String): PrometheusName = {
     apply(value).getOrElse {
@@ -93,10 +93,15 @@ object Utils {
   def parserToArgument[T](parser: Parser[T], metavar: String): Argument[T] =
     new Argument[T] {
       override def read(str: String): ValidatedNel[String, T] =
-        (parser.parseOnly(str).either match {
-          case Right(s) => Right(s)
-          case Left(err) => Left(s"Error parsing '${str}': err")
-        }).toValidatedNel
+        runParser(parser, str).toValidatedNel
       override def defaultMetavar = metavar
+    }
+
+  def runParser[T](parser: Parser[T], input: String): Either[String, T] =
+    parser.parseOnly(input) match {
+      case Done("", result) => Right(result)
+      case Done(xs, result) =>
+        Left(s"Error parsing '${input}', leftovers: ${xs}")
+      case err => Left(err.toString)
     }
 }
