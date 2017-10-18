@@ -30,7 +30,7 @@ object Main {
 
     val spark =
       SparkSession.builder
-        .appName(args.jobName.toString)
+        .appName(args.jobName.toPlainString)
         .getOrCreate()
 
     val results = args.metrics.map(_.map(run(spark)))
