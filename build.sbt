@@ -23,6 +23,8 @@ libraryDependencies ++= Seq(
   "org.tpolecat" %% "atto-core" % "0.6.0"
 )
 
+assemblyJarName in assembly := s"${name.value}-${version.value}.jar"
+
 // Override the directory structure settings so that subprojects have the
 // following flattened layout:
 //
