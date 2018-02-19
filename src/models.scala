@@ -69,7 +69,7 @@ object PrometheusName {
 case class Args(
     pushgateway: String,
     jobName: PrometheusName,
-    metrics: List[Metric[Query]]
+    metrics: NonEmptyList[Metric[Query]]
 )
 object Args {
   val opts: Opts[Args] = {
@@ -78,12 +78,12 @@ object Args {
       Metrics to export. Format: <metric_name>=<SQL>
       SQL statement should have a column named "value" with a numeric type.
       Rest of the columns will be stringified and assigned as labels.
-    """.stripMargin
-    (Opts.option[String]("pushgateway", help = "URL to Prometheus Pushgateway")
-      |@| Opts.option[PrometheusName]("job", help = "Job Name")
-      |@| Opts
-        .options[Metric[Query]]("metric", short = "m", help = metricHelp)
-        .map(_.toList)).map(Args(_, _, _))
+      """.stripMargin
+    (Opts.option[String]("pushgateway",
+                         help = "URL to Prometheus Pushgateway"),
+     Opts.option[PrometheusName]("job", help = "Job Name"),
+     Opts.options[Metric[Query]]("metric", short = "m", help = metricHelp))
+      .mapN(Args(_, _, _))
   }
 }
 
