@@ -34,7 +34,7 @@ object Main {
         .getOrCreate()
 
     val results = args.metrics.map(_.map(run(spark)))
-    val (errs, succs) = separate(results)
+    val (errs, succs) = separate(results.toList)
 
     val registry = new CollectorRegistry
 
