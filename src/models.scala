@@ -67,7 +67,7 @@ object PrometheusName {
 }
 
 case class Args(
-    pushgateway: String,
+    pushgateway: Option[String],
     jobName: PrometheusName,
     metrics: NonEmptyList[Metric[Query]]
 )
@@ -79,11 +79,28 @@ object Args {
       SQL statement should have a column named "value" with a numeric type.
       Rest of the columns will be stringified and assigned as labels.
       """.stripMargin
-    (Opts.option[String]("pushgateway",
-                         help = "URL to Prometheus Pushgateway"),
+    (Opts
+       .option[String]("pushgateway", help = "URL to Prometheus Pushgateway")
+       .orNone,
      Opts.option[PrometheusName]("job", help = "Job Name"),
-     Opts.options[Metric[Query]]("metric", short = "m", help = metricHelp))
-      .mapN(Args(_, _, _))
+     Opts.options[Metric[Query]]("metric", short = "m", help = metricHelp),
+     Opts
+       .flag("dry-run",
+             help = "Only print the results, don't push to Pushgateway.")
+       .orFalse)
+      .mapN((_, _, _, _))
+      .mapValidated {
+        case (Some(pg), job, metric, false) =>
+          Validated.valid(Args(Some(pg), job, metric))
+        case (None, job, metric, true) =>
+          Validated.valid(Args(None, job, metric))
+        case (Some(pg), _, _, true) =>
+          Validated.invalidNel(
+            "Can not use --pushgateway <url> or --dry-run at the same time.")
+        case (None, _, _, false) =>
+          Validated.invalidNel(
+            "Either --pushgateway and --dry-run should be supplied.")
+      }
   }
 }
 
