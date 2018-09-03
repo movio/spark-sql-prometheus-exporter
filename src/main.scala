@@ -36,21 +36,35 @@ object Main {
     val results = args.metrics.map(_.map(run(spark)))
     val (errs, succs) = separate(results.toList)
 
-    val registry = new CollectorRegistry
+    args.pushgateway match {
+      case Some(pushgateway) =>
+        val registry = new CollectorRegistry
+        succs.foreach(register(registry))
 
-    succs.foreach(register(registry))
+        Gauge
+          .build()
+          .name("spark_sql_prometheus_exporter_errors")
+          .help("errors")
+          .register(registry)
+          .set(errs.size.toDouble)
 
-    Gauge
-      .build()
-      .name("spark_sql_prometheus_exporter_errors")
-      .help("errors")
-      .register(registry)
-      .set(errs.size.toDouble)
+        new PushGateway(new URL(pushgateway))
+          .pushAdd(registry, args.jobName.toPlainString)
+      case None =>
+        succs.foreach { m =>
+          println(m.name.toPlainString)
+          val hdr = m.value.labels.map(_.toPlainString) :+ "value"
+          println(hdr.mkString("\t"))
+          m.value.rows.foreach {
+            case SingleMetric(labels, value) =>
+              val row = labels :+ value.toString
+              println(row.mkString("\t"))
+          }
+          println()
+        }
+    }
 
     errs.foreach(report)
-
-    new PushGateway(new URL(args.pushgateway))
-      .pushAdd(registry, args.jobName.toPlainString)
 
     if (errs.nonEmpty)
       System.exit(1)
