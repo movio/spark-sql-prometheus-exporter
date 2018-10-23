@@ -68,7 +68,7 @@ object PrometheusName {
 
 case class Args(
     pushgateway: Option[String],
-    jobName: PrometheusName,
+    jobName: String,
     metrics: NonEmptyList[Metric[Query]]
 )
 object Args {
@@ -82,7 +82,7 @@ object Args {
     (Opts
        .option[String]("pushgateway", help = "URL to Prometheus Pushgateway")
        .orNone,
-     Opts.option[PrometheusName]("job", help = "Job Name"),
+     Opts.option[String]("job", help = "Job Name"),
      Opts.options[Metric[Query]]("metric", short = "m", help = metricHelp),
      Opts
        .flag("dry-run",

@@ -30,7 +30,7 @@ object Main {
 
     val spark =
       SparkSession.builder
-        .appName(args.jobName.toPlainString)
+        .appName(args.jobName)
         .getOrCreate()
 
     val results = args.metrics.map(_.map(run(spark)))
@@ -49,7 +49,7 @@ object Main {
           .set(errs.size.toDouble)
 
         new PushGateway(new URL(pushgateway))
-          .pushAdd(registry, args.jobName.toPlainString)
+          .pushAdd(registry, args.jobName)
       case None =>
         succs.foreach { m =>
           println(m.name.toPlainString)
