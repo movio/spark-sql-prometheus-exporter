@@ -16,10 +16,10 @@ scalacOptions := Seq(
 )
 
 libraryDependencies ++= Seq(
-  "io.prometheus" % "simpleclient_pushgateway" % "0.2.0",
-  "org.apache.spark" %% "spark-sql" % "2.2.1" % Provided,
-  "com.monovore" %% "decline" % "0.4.0",
-  "org.tpolecat" %% "atto-core" % "0.6.2-M1"
+  "io.prometheus" % "simpleclient_pushgateway" % "0.5.0",
+  "org.apache.spark" %% "spark-sql" % "2.2.2" % Provided,
+  "com.monovore" %% "decline" % "0.5.1",
+  "org.tpolecat" %% "atto-core" % "0.6.3"
 )
 
 assemblyJarName in assembly := s"${name.value}-${version.value}.jar"
