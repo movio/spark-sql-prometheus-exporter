@@ -8,7 +8,7 @@ Usage:
 
 ```bash
 spark-submit \
-  --class co.movio.sparksqlprometheusexporter.Main
+  --class co.movio.sparksqlprometheusexporter.Main \
   spark-sql-prometheus-exporter.jar \
   --pushgateway https://url-to-pushgateway/ \
   --job member_dataset_exporter \
